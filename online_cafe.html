@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coffee Shop</title>
+</head>
+<body>
+    <div id="welcome-screen">
+        <h1>Welcome to the Coffee Shop!</h1>
+        <button onclick="showMenu()">MENU for coffee drinks</button>
+        <button onclick="orderCoffee()">Order a coffee drink</button>
+        <button onclick="exitProgram()">Exit</button>
+    </div>
+
+    <div id="menu-screen" style="display: none;">
+        <h2>Coffee Menu:</h2>
+        <ul id="coffee-menu">
+            <!-- Coffee menu items will be added dynamically using JavaScript -->
+        </ul>
+        <button onclick="goBackToWelcome()">Back</button>
+    </div>
+
+    <div id="order-screen" style="display: none;">
+        <h2>Order a Coffee</h2>
+        <select id="coffee-choice">
+            <!-- Coffee menu options will be added dynamically using JavaScript -->
+        </select>
+        <input type="number" id="quantity" placeholder="Quantity">
+        <select id="size">
+            <option value="Large">Large</option>
+            <option value="Medium">Medium</option>
+            <option value="Small">Small</option>
+        </select>
+        <input type="text" id="topping" placeholder="Add Topping">
+        <button onclick="addTopping()">Add Topping</button>
+        <ul id="toppings-list">
+            <!-- Toppings will be added dynamically using JavaScript -->
+        </ul>
+        <button onclick="placeOrder()">Place Order</button>
+        <button onclick="goBackToWelcome()">Back</button>
+    </div>
+
+    <div id="invoice" style="display: none;">
+        <h2>Invoice</h2>
+        <ul id="order-details">
+            <!-- Order details will be added dynamically using JavaScript -->
+        </ul>
+        <p id="total-cost"></p>
+        <button onclick="goBackToWelcome()">Back to Welcome Screen</button>
+    </div>
+
+    <script>
+        const coffeeMenu = {
+            "Latte": 15,
+            "Cappuccino": 18,
+            "Espresso": 12,
+            "Macchiato": 20,
+        };
+
+        let currentOrder = {
+            items: [],
+            totalCost: 0
+        };
+
+        function showMenu() {
+            const menuScreen = document.getElementById("menu-screen");
+            menuScreen.style.display = "block";
+
+            const coffeeMenuList = document.getElementById("coffee-menu");
+            coffeeMenuList.innerHTML = "";
+            for (const coffee in coffeeMenu) {
+                const price = coffeeMenu[coffee];
+                const listItem = document.createElement("li");
+                listItem.innerText = `${coffee}: ${price} AED`;
+                coffeeMenuList.appendChild(listItem);
+            }
+        }
+
+        function orderCoffee() {
+            const orderScreen = document.getElementById("order-screen");
+            orderScreen.style.display = "block";
+
+            const coffeeChoice = document.getElementById("coffee-choice");
+            coffeeChoice.innerHTML = "";
+            for (const coffee in coffeeMenu) {
+                const option = document.createElement("option");
+                option.value = coffee;
+                option.innerText = coffee;
+                coffeeChoice.appendChild(option);
+            }
+        }
+
+        function addTopping() {
+            const toppingInput = document.getElementById("topping");
+            const toppingsList = document.getElementById("toppings-list");
+
+            if (toppingInput.value.trim() !== "") {
+                const listItem = document.createElement("li");
+                listItem.innerText = toppingInput.value;
+                toppingsList.appendChild(listItem);
+                toppingInput.value = "";
+            }
+        }
+
+        function placeOrder() {
+            const coffeeChoice = document.getElementById("coffee-choice").value;
+            const quantity = parseInt(document.getElementById("quantity").value);
+            const size = document.getElementById("size").value;
+            const toppingsList = document.getElementById("toppings-list");
+            const toppings = Array.from(toppingsList.children).map(topping => topping.innerText);
+
+            const coffeeCost = coffeeMenu[coffeeChoice] * quantity;
+            const toppingsCost = toppings.length;
+            const totalCost = coffeeCost + toppingsCost;
+
+            currentOrder.items.push(`${quantity} ${size} ${coffeeChoice} with ${toppings.join(", ")}`);
+            currentOrder.totalCost += totalCost;
+
+            const invoice = document.getElementById("invoice");
+            invoice.style.display = "block";
+
+            const orderDetails = document.getElementById("order-details");
+            orderDetails.innerHTML = "";
+            for (const item of currentOrder.items) {
+                const listItem = document.createElement("li");
+                listItem.innerText = item;
+                orderDetails.appendChild(listItem);
+            }
+
+            const totalCostText = document.getElementById("total-cost");
+            totalCostText.innerText = `Total Cost: ${currentOrder.totalCost} AED`;
+        }
+
+        function goBackToWelcome() {
+            const screens = ["welcome-screen", "menu-screen", "order-screen", "invoice"];
+            for (const screen of screens) {
+                document.getElementById(screen).style.display = "none";
+            }
+
+            currentOrder = {
+                items: [],
+                totalCost: 0
+            };
+        }
+
+        function exitProgram() {
+            goBackToWelcome();
+        }
+    </script>
+</body>
+</html>
